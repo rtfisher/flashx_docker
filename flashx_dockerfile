@@ -1,0 +1,113 @@
+# This Dockerfile contains the necessary steps to build a container for Flash-X,
+# including the HDF5 and OpenMPI dependencies, yt through a Miniconda environment,
+# and the Flash-X source code itself.
+#
+# The container is on the 20.04 base image, and automatically detects the architecture
+#  for either x86_64 or aarch64. The appropriate Miniconda version is installed.
+#
+# The FLASH-X setup script is automatically called to build the Sedov test problem in 
+#  2d Cartesian geometry by default, producing the flashx executable in the object
+#  subdirectory.
+#
+# RTF, 072524
+
+# Use an appropriate base image
+FROM ubuntu:20.04 AS base
+
+# Set environment variables to avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# Install dependencies including HDF5 and Python packages for yt
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gfortran \
+    openmpi-bin \
+    libhdf5-dev\
+    libhdf5-openmpi-dev \
+    cmake \
+    wget \
+    python3 \
+    python3-pip \
+    git \
+    tzdata \
+    vim \
+    ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PATH=/usr/lib/openmpi/bin:$PATH
+
+# Detect architecture and install the correct version of Miniconda
+RUN ARCH=$(uname -m) && \
+    if [ "${ARCH}" = "x86_64" ]; then \
+        MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh"; \
+    elif [ "${ARCH}" = "aarch64" ]; then \
+        MINICONDA_URL="https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh"; \
+    else \
+        echo "Unsupported architecture: ${ARCH}"; exit 1; \
+    fi && \
+    wget "${MINICONDA_URL}" -O /tmp/miniconda.sh && \
+    bash /tmp/miniconda.sh -b -p /opt/miniconda && \
+    rm /tmp/miniconda.sh
+
+# Update PATH to include conda
+ENV PATH="/opt/miniconda/bin:${PATH}"
+
+# Ensure conda is up-to-date
+RUN conda update -n base -c defaults conda
+
+# Create a Conda environment with Python 3.10, h5py, and yt
+RUN conda create -n myenv python=3.10 h5py yt -y
+
+# Activate the environment
+RUN echo "source activate myenv" >> ~/.bashrc
+ENV CONDA_DEFAULT_ENV=myenv
+ENV PATH="/opt/miniconda/envs/myenv/bin:$PATH"
+
+# Increase Git buffer size to handle large repositories for Flash-X
+RUN git config --global http.postBuffer 104857600
+
+# Create a non-root user and group
+RUN groupadd -r flashgroup && useradd -r -g flashgroup -m -d /home/flashuser -s /bin/bash flashuser
+
+# Switch to the flashuser home directory
+WORKDIR /home/flashuser
+
+# Retry mechanism for git clone
+RUN git_clone_with_retries() { \
+      for i in {1..5}; do \
+        git clone --depth 1 https://github.com/rtfisher/Flash-X.git flashx && break || sleep 5; \
+      done; \
+    } && git_clone_with_retries
+
+# Set the working directory to the cloned repository
+WORKDIR /home/flashuser/flashx
+
+# Ensure the setup script is executable
+RUN chmod +x Flash-X/setup
+
+RUN /home/flashuser/flashx/Flash-X/setup Sedov -2d -auto
+
+# Change to the object directory and run make
+WORKDIR /home/flashuser/flashx/Flash-X/object
+RUN make
+
+# Change ownership of the home directory to flashuser
+RUN chown -R flashuser:flashgroup /home/flashuser
+
+# Switch to the non-root user
+USER flashuser
+
+# Create a manifest file with date, uname, and installed software versions for reproducibility
+RUN mkdir -p /home/flashuser && \
+    echo "Date: $(date)" > /home/flashuser/MANIFEST && \
+    echo "System Specifications: $(uname -a)" >> /home/flashuser/MANIFEST && \
+    echo "Installed Packages:" >> /home/flashuser/MANIFEST && \
+    dpkg -l >> /home/flashuser/MANIFEST && \
+    echo "Python Packages:" >> /home/flashuser/MANIFEST && \
+    pip freeze >> /home/flashuser/MANIFEST
+
+# Set the working directory
+WORKDIR /home/flashuser/flashx/Flash-X/object
+
+CMD ["/bin/bash"]

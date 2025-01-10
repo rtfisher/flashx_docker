@@ -1,0 +1,69 @@
+echo >/dev/null # >nul & GOTO WINDOWS & rem ^
+echo 'Processing for Linux'
+
+# ***********************************************************
+# * NOTE: If you modify this content, be sure to remove carriage returns (\r) 
+# *       from the Linux part and leave them in together with the line feeds 
+# *       (\n) for the Windows part. In summary:
+# *           New lines in Linux: \n
+# *           New lines in Windows: \r\n 
+# ***********************************************************
+
+# Linux/macOS Bash commands
+echo "Running on Linux/macOS..."
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+    echo "Docker is not running. Please start Docker and try again."
+    exit 1
+fi
+
+# Set the volume mount path
+StartDir="$(pwd)"
+HOME_DIR=$(eval echo ~)
+VOLUME_MOUNT="${HOME_DIR}/flashx:/home/flashuser/flashx/Flash-X/desktop"
+
+# Run the Docker container
+docker run --rm -it \
+    --name flashx-container \
+    --hostname buildkitsandbox \
+    -v $VOLUME_MOUNT \
+    flashx-app
+
+if [ $? -ne 0 ]; then
+    echo "Failed to run the Docker container. Please check your settings and try again."
+    exit 1
+fi
+
+# Exit after processing on Linux/macOS
+exit 0
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+:WINDOWS
+echo "Processing for Windows"
+
+REM Windows CMD commands
+SET StartDir=%cd%
+
+REM Check if Docker is running
+docker info >nul 2>&1
+IF ERRORLEVEL 1 (
+    echo Docker is not running. Please start Docker Desktop and try again.
+    exit /b 1
+)
+
+REM Set the volume mount path
+SET HOME_DIR=%USERPROFILE%
+SET VOLUME_MOUNT=%HOME_DIR%\flashx:/home/flashuser/flashx/Flash-X/desktop
+
+REM Run the Docker container
+docker run --rm -it --name flashx-container --hostname buildkitsandbox -v %VOLUME_MOUNT% flashx-app
+IF ERRORLEVEL 1 (
+    echo Failed to run the Docker container. Please check your settings and try again.
+    exit /b 1
+)
+
+REM Script completes
+exit /b 0
+
