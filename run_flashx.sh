@@ -25,10 +25,12 @@ else
     exit 1
 fi
 
+# Build the Docker container
+docker build -t flashx-app --progress=plain -f flashx_dockerfile .
+
 # Run the Docker container
 docker run --rm -it \
     --name flashx-container \
     --hostname buildkitsandbox \
     -v $VOLUME_MOUNT \
     flashx-app
-
