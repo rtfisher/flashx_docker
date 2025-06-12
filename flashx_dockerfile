@@ -9,7 +9,11 @@
 #  2d Cartesian geometry by default, producing the flashx executable in the object
 #  subdirectory.
 #
+# The user and group id of the user on the host system are passed on to the container to
+#  handle system permissions issues on Windows.
+#
 # RTF, 072524
+# Last modified 071125
 
 # Use an appropriate base image
 FROM ubuntu:20.04 AS base
