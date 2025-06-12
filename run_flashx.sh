@@ -25,8 +25,33 @@ else
     exit 1
 fi
 
+# Define the directory path explicitly
+DIR="$HOME/flashx"
+
+# # Check if the directory exists, and create it if it doesn't
+ if [ ! -d "$DIR" ]; then
+   echo "Directory $DIR does not exist. Creating it now..."
+   mkdir -p "$DIR"
+   echo "Directory $DIR created."
+ fi
+# Get the current user and group
+
+USER=$(whoami)
+GROUP=$(id -gn $USER)
+
+# Change permissions to 755
+chmod 755 "$DIR"
+
+# Change ownership to the current user and group
+chown "$USER":"$GROUP" "$DIR"
+
+# Print the updated permissions and ownership for verification
+echo "Permissions and ownership of $DIR updated:"
+ls -ld "$DIR"
+
 # Build the Docker container
-docker build -t flashx-app --progress=plain -f flashx_dockerfile .
+docker build -t flashx-app --progress=plain -f flashx_dockerfile \
+        --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)   
 
 # Run the Docker container
 docker run --rm -it \
