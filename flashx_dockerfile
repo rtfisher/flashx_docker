@@ -68,7 +68,9 @@ ENV PATH="/opt/miniconda/envs/myenv/bin:$PATH"
 RUN git config --global http.postBuffer 104857600
 
 # Create a non-root user and group
-RUN groupadd -r flashgroup && useradd -r -g flashgroup -m -d /home/flashuser -s /bin/bash flashuser
+ARG USER_ID
+ARG GROUP_ID
+RUN groupadd -g $GROUP_ID -r flashgroup && useradd -u $USER_ID -r -g flashgroup -m -d /home/flashuser -s /bin/bash flashuser
 
 # Switch to the flashuser home directory
 WORKDIR /home/flashuser
