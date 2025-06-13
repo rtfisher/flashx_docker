@@ -5,6 +5,8 @@ This repository contains a cross-platform Docker environment for building and ru
 ## Features
 
 - Reproducible environment for Flash-X development and execution
+- Automatic installtion of requisite MPI and HDF5 libraries
+- Conda Python environment with yt toolkit for analysis of Flash-X data
 - Linux UID/GID mapping to maintain correct file ownership on host
 - Automatically mounts a user directory to the container desktop
 - Compatible with Linux, macOS, and Windows (via WSL2)
@@ -71,7 +73,7 @@ The container is run as a non-root user (`flashuser`) with the same UID and GID 
 /home/flashuser/flashx/Flash-X/desktop
 ```
 
-This allows persistent development and testing of Flash-X while avoiding permission conflicts.
+This allows you to easily move results from the container to the host environment and vice versa while avoiding permission conflicts.
 
 ## Troubleshooting
 
