@@ -36,16 +36,10 @@ chmod +x run_flashx.sh
 
 ## Usage
 
-### Linux / macOS
+### Linux / macOS / Windows (WSL2)
 
 ```bash
 ./run_flashx.sh
-```
-
-### Windows (WSL2)
-
-```bash
-bash ./run_flashx.sh
 ```
 
 This will:
