@@ -57,8 +57,10 @@ RUN ARCH=$(uname -m) && \
 # Update PATH to include conda
 ENV PATH="/opt/miniconda/bin:${PATH}"
 
-# Ensure conda is up-to-date
-RUN conda update -n base -c defaults conda
+# Accept Anaconda Terms of Service and ensure conda is up-to-date
+RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
+    conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r && \
+    conda update -n base -c defaults conda
 
 # Create a Conda environment with Python 3.10, h5py, and yt
 RUN conda create -n myenv python=3.10 h5py yt -y
