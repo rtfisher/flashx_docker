@@ -1,5 +1,7 @@
 # flashx_docker
 
+[![CI](https://github.com/rtfisher/flashx_docker/actions/workflows/ci.yml/badge.svg)](https://github.com/rtfisher/flashx_docker/actions/workflows/ci.yml)
+
 This repository contains a cross-platform Docker environment for building and running the [Flash-X](https://github.com/Flash-X/Flash-X) astrophysical simulation code. It ensures consistent user and group ID mappings, portable development, and volume mounting behavior across Linux, macOS, and Windows (via WSL2).
 
 ## Features
