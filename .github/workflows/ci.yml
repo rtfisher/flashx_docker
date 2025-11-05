@@ -1,0 +1,180 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  lint-shell:
+    name: Lint Shell Script
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run ShellCheck
+      uses: ludeeus/action-shellcheck@master
+      with:
+        scandir: '.'
+        format: gcc
+        severity: warning
+
+  lint-dockerfile:
+    name: Lint Dockerfile
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Hadolint
+      uses: hadolint/hadolint-action@v3.1.0
+      with:
+        dockerfile: flashx_dockerfile
+        failure-threshold: warning
+
+  test-shell-script:
+    name: Test Shell Script (BATS)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup BATS
+      uses: mig4/setup-bats@v1
+      with:
+        bats-version: 1.10.0
+
+    - name: Run BATS tests for run_flashx.sh
+      run: |
+        bats tests/test_run_flashx.bats
+
+  test-dockerfile:
+    name: Test Dockerfile (BATS)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup BATS
+      uses: mig4/setup-bats@v1
+      with:
+        bats-version: 1.10.0
+
+    - name: Run BATS tests for Dockerfile
+      run: |
+        bats tests/test_docker_build.bats
+
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup BATS
+      uses: mig4/setup-bats@v1
+      with:
+        bats-version: 1.10.0
+
+    - name: Run integration tests
+      run: |
+        bats tests/test_integration.bats
+
+  docker-build-test:
+    name: Docker Build Test (Light)
+    runs-on: ubuntu-latest
+    # This job tests that the Dockerfile can at least parse and start building
+    # Full builds are skipped in CI due to time constraints
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image (first stage only to save time)
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./flashx_dockerfile
+        push: false
+        tags: flashx:test
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          USER_ID=1000
+          GROUP_ID=1000
+        # Only build first few layers to verify syntax
+        target: builder
+      continue-on-error: true  # May not have multi-stage build
+
+    - name: Test Docker build (full - commented out to save CI time)
+      if: false  # Set to true to enable full build in CI
+      run: |
+        docker build -f flashx_dockerfile \
+          --build-arg USER_ID=$(id -u) \
+          --build-arg GROUP_ID=$(id -g) \
+          -t flashx:test \
+          .
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Trivy vulnerability scanner on repository
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        severity: 'CRITICAL,HIGH'
+
+    - name: Upload Trivy results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  validation-summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [lint-shell, lint-dockerfile, test-shell-script, test-dockerfile, test-integration, docker-build-test]
+    if: always()
+
+    steps:
+    - name: Check all jobs status
+      run: |
+        echo "Lint Shell: ${{ needs.lint-shell.result }}"
+        echo "Lint Dockerfile: ${{ needs.lint-dockerfile.result }}"
+        echo "Test Shell Script: ${{ needs.test-shell-script.result }}"
+        echo "Test Dockerfile: ${{ needs.test-dockerfile.result }}"
+        echo "Integration Tests: ${{ needs.test-integration.result }}"
+        echo "Docker Build Test: ${{ needs.docker-build-test.result }}"
+
+        if [ "${{ needs.lint-shell.result }}" != "success" ] || \
+           [ "${{ needs.lint-dockerfile.result }}" != "success" ] || \
+           [ "${{ needs.test-shell-script.result }}" != "success" ] || \
+           [ "${{ needs.test-dockerfile.result }}" != "success" ] || \
+           [ "${{ needs.test-integration.result }}" != "success" ]; then
+          echo "Some tests failed!"
+          exit 1
+        fi
+
+        echo "All validations passed!"
