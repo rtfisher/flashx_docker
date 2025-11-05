@@ -186,7 +186,101 @@ End-to-end workflow tests:
 - Significant computational resources
 - Platform-specific configurations
 
-To enable these tests, edit `tests/test_integration.bats` and change `skip` to `run` for desired tests.
+#### Running Full Integration Tests
+
+**What's Required:**
+- **Time**: 15-30+ minutes for initial Docker image build
+- **Disk Space**: ~5-10 GB for Docker image and dependencies
+- **Network**: Active internet connection for downloading packages
+- **Resources**:
+  - 4+ GB RAM recommended
+  - Multi-core CPU for faster compilation
+  - Docker daemon running with sufficient resources allocated
+
+**What Gets Built:**
+The full integration tests build a complete Flash-X Docker image including:
+- Ubuntu 20.04 base image
+- Build tools (gcc, gfortran, make, cmake)
+- OpenMPI for parallel computing
+- HDF5 libraries for scientific data storage
+- Miniconda Python 3.10 environment
+- Scientific packages (yt toolkit, h5py)
+- FFmpeg for visualization
+- Flash-X astrophysical simulation code
+- Compiled Sedov test problem
+
+**How to Enable Full Integration Tests:**
+
+1. **Build the Docker image first** (one-time setup):
+   ```bash
+   # Option 1: Use the run script
+   ./run_flashx.sh
+
+   # Option 2: Build directly
+   docker build -f flashx_dockerfile \
+     --build-arg USER_ID=$(id -u) \
+     --build-arg GROUP_ID=$(id -g) \
+     -t flashx-integration-test .
+   ```
+
+2. **Edit the test file** to enable specific tests:
+   ```bash
+   # Open the integration test file
+   vim tests/test_integration.bats
+
+   # Find tests with 'skip' and either:
+   # - Remove the 'skip' line entirely
+   # - Comment it out with '#'
+   # - Replace 'skip' with 'run' (in some test frameworks)
+   ```
+
+3. **Run the full integration test suite**:
+   ```bash
+   bats tests/test_integration.bats
+   ```
+
+**Which Tests to Enable:**
+
+After building the image, you can safely enable these tests:
+- "Built image contains Flash-X directory"
+- "Container can execute basic commands"
+- "Container runs with non-root user"
+- "Container has Conda environment activated"
+- "Container has yt toolkit installed"
+- "Container has h5py installed"
+- "Container has OpenMPI installed"
+- "Container has gcc installed"
+- "Container has gfortran installed"
+- "Container has Flash-X repository cloned"
+- "Container has Sedov test problem built"
+- "Container has MANIFEST file"
+- "Container can mount volumes"
+- "Container has FFmpeg installed"
+- "Container has HDF5 tools"
+- "Container has git installed"
+- "Container has Python 3.10"
+
+**Time-Intensive Tests** (keep skipped unless needed):
+- "Docker image builds successfully" - Full build (~15-30 min)
+- "Can execute Flash-X simulation" - Runs actual simulation (~varies)
+
+**Example: Enabling a Single Test**
+
+Before:
+```bash
+@test "Container has yt toolkit installed" {
+    skip "Requires built image"
+    docker run --rm "$TEST_IMAGE" python -c "import yt"
+}
+```
+
+After:
+```bash
+@test "Container has yt toolkit installed" {
+    # skip "Requires built image"  # Commented out
+    docker run --rm "$TEST_IMAGE" python -c "import yt"
+}
+```
 
 ## GitHub Actions CI/CD
 

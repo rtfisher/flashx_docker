@@ -78,8 +78,9 @@ fi
 # Run hadolint
 if [ "$HADOLINT_AVAILABLE" = true ]; then
     echo "Running Hadolint on flashx_dockerfile..."
-    if hadolint "$PROJECT_ROOT/flashx_dockerfile"; then
-        echo -e "${GREEN}✓ Hadolint passed${NC}"
+    # Only fail on errors, not warnings (matching CI configuration)
+    if hadolint --failure-threshold error "$PROJECT_ROOT/flashx_dockerfile"; then
+        echo -e "${GREEN}✓ Hadolint passed (errors only)${NC}"
     else
         echo -e "${RED}✗ Hadolint failed${NC}"
         exit 1
