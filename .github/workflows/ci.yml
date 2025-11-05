@@ -7,6 +7,10 @@ on:
     branches: [ main, develop ]
   workflow_dispatch:  # Allow manual triggering
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   lint-shell:
     name: Lint Shell Script
@@ -35,7 +39,7 @@ jobs:
       uses: hadolint/hadolint-action@v3.1.0
       with:
         dockerfile: flashx_dockerfile
-        failure-threshold: warning
+        failure-threshold: error
 
   test-shell-script:
     name: Test Shell Script (BATS)

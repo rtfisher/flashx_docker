@@ -80,7 +80,7 @@ setup() {
 
 # Test: Flash-X repository cloning
 @test "Dockerfile clones Flash-X repository" {
-    grep -q "git clone" "$DOCKERFILE" | grep -q "Flash-X"
+    grep "git clone" "$DOCKERFILE" | grep -q "Flash-X"
 }
 
 # Test: User creation

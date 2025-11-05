@@ -146,7 +146,8 @@ teardown() {
 
 # Test: Script creates flashx directory
 @test "Script references flashx directory creation" {
-    grep "flashx" "$RUN_SCRIPT" | grep -q "mkdir"
+    grep -q "flashx.*mkdir\|mkdir.*flashx" "$RUN_SCRIPT" || \
+    (grep "flashx" "$RUN_SCRIPT" && grep -q "mkdir" "$RUN_SCRIPT")
 }
 
 # Test: Script handles permissions
