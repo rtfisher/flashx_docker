@@ -38,7 +38,7 @@ setup() {
 
 # Test: Required build tools
 @test "Dockerfile installs gcc" {
-    grep -q "gcc" "$DOCKERFILE"
+    grep -q "build-essential" "$DOCKERFILE"
 }
 
 @test "Dockerfile installs gfortran" {

@@ -61,8 +61,8 @@ ls -ld "$MOUNT_DIR"
 
 # Build the Docker image with user and group IDs
 docker build -t flashx-app --progress=plain -f flashx_dockerfile \
-    --build-arg USER_ID=$(id -u) \
-    --build-arg GROUP_ID=$(id -g) .
+    --build-arg USER_ID="$(id -u)" \
+    --build-arg GROUP_ID="$(id -g)" .
 
 # Run the Docker container with the volume mount
 docker run --rm -it \

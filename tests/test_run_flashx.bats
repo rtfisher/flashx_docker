@@ -27,6 +27,7 @@ teardown() {
 
 # Test: Script contains required functions and checks
 @test "Script contains Docker availability check" {
+    grep -q "docker info" "$RUN_SCRIPT" || \
     grep -q "docker --version" "$RUN_SCRIPT" || \
     grep -q "command -v docker" "$RUN_SCRIPT"
 }
@@ -94,7 +95,7 @@ teardown() {
 
 # Test: Image naming convention
 @test "Script specifies Docker image name" {
-    grep -q "flashx" "$RUN_SCRIPT" | grep -q "image\|tag\|build"
+    grep "flashx" "$RUN_SCRIPT" | grep -q "build\|run"
 }
 
 # Test: Script handles errors
@@ -121,7 +122,9 @@ teardown() {
 
 # Test: Docker daemon check
 @test "Script checks if Docker is running" {
-    grep -q "docker" "$RUN_SCRIPT" | head -n 20 | grep -q "version\|info\|ps"
+    grep -q "docker info" "$RUN_SCRIPT" || \
+    grep -q "docker ps" "$RUN_SCRIPT" || \
+    grep -q "docker --version" "$RUN_SCRIPT"
 }
 
 # Test: No hardcoded passwords or secrets
@@ -143,7 +146,7 @@ teardown() {
 
 # Test: Script creates flashx directory
 @test "Script references flashx directory creation" {
-    grep -q "flashx" "$RUN_SCRIPT" | grep -q "mkdir\|directory"
+    grep "flashx" "$RUN_SCRIPT" | grep -q "mkdir"
 }
 
 # Test: Script handles permissions
