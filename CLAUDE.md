@@ -46,7 +46,7 @@ Integration tests that require a built Docker image are skipped by default (they
 
 - Shell scripts use `#!/bin/bash` and `set -e`
 - Dockerfile uses `DEBIAN_FRONTEND=noninteractive` and cleans apt lists
-- Container runs as non-root user `flashuser` with host UID/GID mapping
+- Container runs as non-root user `flashuser` with host UID/GID mapping; hostname is `flashx`
 - Volume mount: `~/flashx` on host maps to `/home/flashuser/flashx/Flash-X/desktop` in container
 - BATS tests use `@test "description" { ... }` with descriptive imperative names
 - Cross-platform support: Linux, macOS, Windows (WSL2) with `uname -s` detection

@@ -67,7 +67,7 @@ docker build -t flashx-app --progress=plain -f flashx_dockerfile \
 # Run the Docker container with the volume mount
 docker run --rm -it \
     --name flashx-container \
-    --hostname buildkitsandbox \
+    --hostname flashx \
     -v "$VOLUME_MOUNT" \
     flashx-app
 
