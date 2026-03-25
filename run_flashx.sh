@@ -26,8 +26,17 @@ set -e  # Exit immediately on error
 if [ "${CODESPACES}" = "true" ]; then
     echo "Running inside GitHub Codespaces — Docker container not needed."
     echo "The Flash-X environment is already available."
-    cd "${HOME}/flashx/Flash-X/object"
-    exec /bin/bash
+    OBJECT_DIR="${HOME}/flashx/Flash-X/object"
+    if [ -d "$OBJECT_DIR" ]; then
+        echo "Launching shell in ${OBJECT_DIR}"
+        echo "Run ./flashx to execute the Sedov test."
+        cd "$OBJECT_DIR"
+        exec /bin/bash
+    else
+        echo "Error: ${OBJECT_DIR} not found."
+        echo "The dev container may not have built correctly."
+        exit 1
+    fi
 fi
 
 # Check if Docker is running

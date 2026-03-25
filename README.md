@@ -40,24 +40,6 @@ chmod +x run_flashx.sh
 
 ## Usage
 
-### Linux / macOS / Windows (WSL2)
-
-```bash
-./run_flashx.sh
-```
-
-This will:
-
-1. Ensure Docker is running.
-2. Create a `~/flashx` directory if it doesn't exist.
-3. Set the proper permissions for mounting.
-4. Build the `flashx-app` Docker image with your user and group ID.
-5. Run the container with your host's `~/flashx` directory mounted to:
-
-```
-/home/flashuser/flashx/Flash-X/desktop
-```
-
 ### GitHub Codespaces (no local Docker required)
 
 You can run Flash-X entirely in the cloud using GitHub Codespaces. The repository includes a dev container configuration, so the Codespace is automatically built with all dependencies.
@@ -100,6 +82,24 @@ gh codespace ports forward 8000:8000 -c <codespace-name>
 > **Tip:** The `<codespace-name>` is printed when you create the codespace (e.g., `fluffy-rocket-abc123def456ghij`). You can also retrieve it at any time with `gh codespace list`.
 
 > If you run `./run_flashx.sh` inside a Codespace, it will detect the environment and drop you into the object directory directly, skipping the Docker build.
+
+### Linux / macOS / Windows (WSL2)
+
+```bash
+./run_flashx.sh
+```
+
+This will:
+
+1. Ensure Docker is running.
+2. Create a `~/flashx` directory if it doesn't exist.
+3. Set the proper permissions for mounting.
+4. Build the `flashx-app` Docker image with your user and group ID.
+5. Run the container with your host's `~/flashx` directory mounted to:
+
+```
+/home/flashuser/flashx/Flash-X/desktop
+```
 
 ## Directory Structure
 
