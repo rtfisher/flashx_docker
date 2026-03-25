@@ -155,6 +155,24 @@ setup() {
     grep -q "conda activate\|conda init\|conda create" "$DOCKERFILE"
 }
 
+# Test: Object directory ownership is transferred to flashuser before USER switch
+@test "Dockerfile chowns home directory to flashuser before USER switch" {
+    # The build steps (git clone, setup, make) run as root. If ownership is not
+    # transferred before switching to flashuser, the object directory will be
+    # root-owned and flashx will fail at runtime with "could not create log file".
+    #
+    # Extract the line numbers of the last chown of /home/flashuser and the USER directive.
+    last_chown_line=$(grep -n "chown.*flashuser\|chown.*USER_ID.*GROUP_ID" "$DOCKERFILE" | grep -v "^#" | tail -1 | cut -d: -f1)
+    user_switch_line=$(grep -n "^USER flashuser" "$DOCKERFILE" | tail -1 | cut -d: -f1)
+
+    # A chown must exist
+    [ -n "$last_chown_line" ]
+    # The USER switch must exist
+    [ -n "$user_switch_line" ]
+    # The chown must come before the USER switch
+    [ "$last_chown_line" -lt "$user_switch_line" ]
+}
+
 # Test: No credentials exposed
 @test "Dockerfile does not contain hardcoded credentials" {
     ! grep -i "password\|passwd\|secret\|token.*=" "$DOCKERFILE" | grep -v "^#"

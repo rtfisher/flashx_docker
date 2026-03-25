@@ -117,7 +117,7 @@ WORKDIR /home/flashuser/flashx/Flash-X/object
 RUN make
 
 # Change ownership of the home directory to flashuser
-#RUN chown -R flashuser:flashgroup /home/flashuser
+RUN chown -R ${USER_ID}:${GROUP_ID} /home/flashuser
 
 # Switch to the non-root user
 USER flashuser
