@@ -7,6 +7,11 @@
             "GROUP_ID": "1000"
         }
     },
+    "features": {
+        "ghcr.io/devcontainers/features/sshd:1": {
+            "version": "latest"
+        }
+    },
     "remoteUser": "flashuser",
     "postStartCommand": "echo 'Flash-X environment ready. Run cd ~/flashx/Flash-X/object && ./flashx to execute the Sedov test.'"
 }
