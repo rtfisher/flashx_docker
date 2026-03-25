@@ -77,8 +77,11 @@ cd ~/flashx/Flash-X/object
 **From the command line (GitHub CLI):**
 
 ```bash
-# Create a codespace
-gh codespace create -r rtfisher/flashx_docker -b main
+# Create a codespace (prints the codespace name on success)
+gh codespace create -R rtfisher/flashx_docker -b main
+
+# List your codespaces to find the name
+gh codespace list
 
 # SSH in — pure terminal, no VS Code
 gh codespace ssh -c <codespace-name>
@@ -93,6 +96,8 @@ You can also forward ports back to your local machine if needed:
 ```bash
 gh codespace ports forward 8000:8000 -c <codespace-name>
 ```
+
+> **Tip:** The `<codespace-name>` is printed when you create the codespace (e.g., `fluffy-rocket-abc123def456ghij`). You can also retrieve it at any time with `gh codespace list`.
 
 > If you run `./run_flashx.sh` inside a Codespace, it will detect the environment and drop you into the object directory directly, skipping the Docker build.
 
