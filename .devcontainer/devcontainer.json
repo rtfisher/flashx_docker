@@ -1,0 +1,12 @@
+{
+    "name": "Flash-X Development Environment",
+    "dockerFile": "../flashx_dockerfile",
+    "build": {
+        "args": {
+            "USER_ID": "1000",
+            "GROUP_ID": "1000"
+        }
+    },
+    "remoteUser": "flashuser",
+    "postStartCommand": "echo 'Flash-X environment ready. Run cd ~/flashx/Flash-X/object && ./flashx to execute the Sedov test.'"
+}

@@ -124,6 +124,23 @@ jobs:
       run: |
         docker run --rm flashx:test bash -c "cd /home/flashuser/flashx/Flash-X/object && ./flashx"
 
+  devcontainer-build:
+    name: Dev Container Build Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build dev container
+      uses: devcontainers/ci@v0.3
+      with:
+        runCmd: |
+          echo "Dev container built successfully"
+          whoami
+          test -f /home/flashuser/flashx/Flash-X/object/flashx
+          echo "Flash-X executable found"
+
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
@@ -150,7 +167,7 @@ jobs:
   validation-summary:
     name: Validation Summary
     runs-on: ubuntu-latest
-    needs: [lint-shell, lint-dockerfile, test-shell-script, test-dockerfile, test-integration, docker-build-and-run]
+    needs: [lint-shell, lint-dockerfile, test-shell-script, test-dockerfile, test-integration, docker-build-and-run, devcontainer-build]
     if: always()
 
     steps:
@@ -162,6 +179,7 @@ jobs:
         echo "Test Dockerfile: ${{ needs.test-dockerfile.result }}"
         echo "Integration Tests: ${{ needs.test-integration.result }}"
         echo "Docker Build and Run: ${{ needs.docker-build-and-run.result }}"
+        echo "Dev Container Build: ${{ needs.devcontainer-build.result }}"
 
         if [ "${{ needs.lint-shell.result }}" != "success" ] || \
            [ "${{ needs.lint-dockerfile.result }}" != "success" ] || \

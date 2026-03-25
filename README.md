@@ -58,6 +58,44 @@ This will:
 /home/flashuser/flashx/Flash-X/desktop
 ```
 
+### GitHub Codespaces (no local Docker required)
+
+You can run Flash-X entirely in the cloud using GitHub Codespaces. The repository includes a dev container configuration, so the Codespace is automatically built with all dependencies.
+
+**From the browser:**
+
+1. Navigate to [https://github.com/rtfisher/flashx_docker](https://github.com/rtfisher/flashx_docker)
+2. Click the green **Code** button, then select the **Codespaces** tab
+3. Click **Create codespace on main**
+4. Once the environment loads, open a terminal and run:
+
+```bash
+cd ~/flashx/Flash-X/object
+./flashx
+```
+
+**From the command line (GitHub CLI):**
+
+```bash
+# Create a codespace
+gh codespace create -r rtfisher/flashx_docker -b main
+
+# SSH in — pure terminal, no VS Code
+gh codespace ssh -c <codespace-name>
+
+# Once inside, the Flash-X environment is ready:
+cd ~/flashx/Flash-X/object
+./flashx
+```
+
+You can also forward ports back to your local machine if needed:
+
+```bash
+gh codespace ports forward 8000:8000 -c <codespace-name>
+```
+
+> If you run `./run_flashx.sh` inside a Codespace, it will detect the environment and drop you into the object directory directly, skipping the Docker build.
+
 ## Directory Structure
 
 ```

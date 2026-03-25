@@ -21,6 +21,15 @@
 
 set -e  # Exit immediately on error
 
+# If running inside a GitHub Codespace, the environment is already set up
+# via devcontainer.json — no Docker build/run needed.
+if [ "${CODESPACES}" = "true" ]; then
+    echo "Running inside GitHub Codespaces — Docker container not needed."
+    echo "The Flash-X environment is already available."
+    cd "${HOME}/flashx/Flash-X/object"
+    exec /bin/bash
+fi
+
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
     echo "Docker is not running. Please start Docker and try again."

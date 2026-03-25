@@ -14,6 +14,8 @@ tests/
   test_run_flashx.bats  # Unit tests for the launcher script
   test_docker_build.bats # Dockerfile validation tests
   test_integration.bats # End-to-end integration tests
+.devcontainer/
+  devcontainer.json       # GitHub Codespaces / Dev Container config
 .github/workflows/ci.yml # CI pipeline
 ```
 
@@ -49,4 +51,5 @@ Integration tests that require a built Docker image are skipped by default (they
 - Container runs as non-root user `flashuser` with host UID/GID mapping; hostname is `flashx`
 - Volume mount: `~/flashx` on host maps to `/home/flashuser/flashx/Flash-X/desktop` in container
 - BATS tests use `@test "description" { ... }` with descriptive imperative names
-- Cross-platform support: Linux, macOS, Windows (WSL2) with `uname -s` detection
+- Cross-platform support: Linux, macOS, Windows (WSL2), and GitHub Codespaces
+- `run_flashx.sh` detects Codespaces (`CODESPACES=true`) and skips Docker build/run
