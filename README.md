@@ -56,7 +56,7 @@ cd ~/flashx/Flash-X/object
 ./flashx
 ```
 
-**From the command line (GitHub CLI):**
+**From the command line ([GitHub CLI](HOWTO_install_gh.md)):**
 
 ```bash
 # Create a codespace (prints the codespace name on success)
