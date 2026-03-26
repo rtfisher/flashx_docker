@@ -13,5 +13,6 @@
         }
     },
     "remoteUser": "flashuser",
-    "postStartCommand": "echo 'Flash-X environment ready. Run cd ~/flashx/Flash-X/object && ./flashx to execute the Sedov test.'"
+    "workspaceFolder": "/home/flashuser/flashx/Flash-X/object",
+    "postStartCommand": "echo 'Flash-X environment ready. Run ./flashx to execute the Sedov test.'"
 }
