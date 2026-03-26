@@ -73,6 +73,11 @@ cd ~/flashx/Flash-X/object
 ./flashx
 ```
 
+> **SSH passphrase:** If prompted for your SSH key passphrase each time, you can cache it so you only enter it once:
+> - **macOS**: `ssh-add --apple-use-keychain ~/.ssh/id_rsa` (stores permanently in Keychain)
+> - **Linux**: `ssh-add ~/.ssh/id_rsa` (caches for the current session)
+> - **Windows**: `ssh-add $env:USERPROFILE\.ssh\id_rsa` in PowerShell (requires the OpenSSH Authentication Agent service to be running)
+
 You can also forward ports back to your local machine if needed:
 
 ```bash
