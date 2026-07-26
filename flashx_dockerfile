@@ -70,29 +70,6 @@ RUN echo "source activate myenv" >> ~/.bashrc
 ENV CONDA_DEFAULT_ENV=myenv
 ENV PATH="/opt/miniconda/envs/myenv/bin:$PATH"
 
-# ---------------------------------------------------------------------------
-#  Gemini CLI  --  TEMPORARY, FOR THE JULY 2026 WORKSHOP ONLY
-#
-#  Day 2 of LAUNCH 2026 ends with a short segment on using a command-line AI
-#  assistant (slides 70b-70f), which needs the `gemini` binary on PATH.
-#  Verified 2026-07-26 that it was NOT present, which left five slides -- and a
-#  live demo -- with nothing behind them.
-#
-#  Node is installed via conda because the image has no Node at all, and
-#  Ubuntu 20.04's apt nodejs is v10, far below the v18+ the CLI requires.
-#
-#  ⚠ REMOVE AFTER THE WORKSHOP (see docs/PREFLIGHT_CHECKLIST.md, item T11).
-#     Delete this whole block and rebuild; nothing else depends on it.
-#     It costs image size and build time, and the CLI needs the student to
-#     authenticate with a Google account on first use, so it is not something
-#     to leave lying around in a teaching image indefinitely.
-# ---------------------------------------------------------------------------
-RUN conda install -n myenv -c conda-forge nodejs -y \
-    && /opt/miniconda/envs/myenv/bin/npm install -g @google/gemini-cli \
-    && /opt/miniconda/envs/myenv/bin/gemini --version || \
-       echo "WARNING: gemini CLI install failed; Day 2 Section F will not work"
-
-
 # Increase Git buffer size to handle large repositories for Flash-X
 RUN git config --global http.postBuffer 104857600
 
