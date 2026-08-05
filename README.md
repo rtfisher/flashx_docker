@@ -142,4 +142,22 @@ MIT License. See [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-This setup is inspired by cross-platform Docker workflows for scientific computing. Flash-X is developed and maintained by the Flash Center for Computational Science.
+This setup is inspired by cross-platform Docker workflows for scientific computing.
+
+[Flash-X](https://github.com/Flash-X/Flash-X) is an open-source multiphysics simulation
+software instrument, released under the Apache License 2.0, copyright © 2021 UChicago
+Argonne, LLC, as operator of Argonne National Laboratory. It is derived from FLASH and,
+per its NOTICE file, "includes software developed by and/or derived from the Flash Center
+for Computational Science." Flash-X and FLASH are distinct codes with distinct development
+teams; FLASH continues to be maintained by the
+[Flash Center for Computational Science](https://flash.rochester.edu/) at the University
+of Rochester.
+
+If you use Flash-X in your work, please cite the paper named in its CITATION.cff:
+
+> A. Dubey et al., "Flash-X: A multiphysics simulation software instrument,"
+> *SoftwareX* **19**, 101168 (2022).
+> doi:[10.1016/j.softx.2022.101168](https://doi.org/10.1016/j.softx.2022.101168)
+
+This Docker environment is an independent convenience wrapper, not affiliated with or
+endorsed by the Flash-X project.
