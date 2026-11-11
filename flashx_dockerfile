@@ -103,7 +103,7 @@ RUN set -eux; \
 WORKDIR /home/flashuser
 
 # Flash-X branch or tag to build; override with --build-arg FLASHX_REF=<ref> to test one
-ARG FLASHX_REF=main
+ARG FLASHX_REF=docker-site-gcc10
 
 # Retry mechanism for git clone
 RUN git_clone_with_retries() { \
