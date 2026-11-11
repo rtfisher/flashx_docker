@@ -7,7 +7,7 @@ flashx_docker provides a cross-platform Docker environment for building and runn
 ## Repository Structure
 
 ```
-flashx_dockerfile       # Docker image definition (Ubuntu 20.04 base)
+flashx_dockerfile       # Docker image definition (Ubuntu 24.04 base)
 run_flashx.sh           # Cross-platform build/run launcher
 tests/
   run_tests.sh          # Test runner (BATS + linters)

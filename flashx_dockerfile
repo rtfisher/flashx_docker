@@ -2,7 +2,7 @@
 # including the HDF5 and OpenMPI dependencies, yt through a Miniconda environment,
 # and the Flash-X source code itself.
 #
-# The container is on the 20.04 base image, and automatically detects the architecture
+# The container is on the 24.04 base image, and automatically detects the architecture
 #  for either x86_64 or aarch64. The appropriate Miniconda version is installed.
 #
 # The FLASH-X setup script is automatically called to build the Sedov test problem in 
@@ -13,10 +13,10 @@
 #  handle system permissions issues on Windows.
 #
 # RTF, 072524
-# Last modified 071125
+# Last modified 111126
 
-# Use an appropriate base image
-FROM ubuntu:20.04 AS base
+# Use an appropriate base image (24.04 LTS; 20.04 is out of standard support)
+FROM ubuntu:24.04 AS base
 
 # Set environment variables to avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -84,7 +84,11 @@ ARG GROUP_ID
 ARG USER_ID
 ARG GROUP_ID
 
+# Ubuntu 24.04 images ship a default "ubuntu" user and group with UID/GID 1000,
+# the ID Codespaces and the dev container pass in; remove it so flashuser can
+# take that ID. (No such user exists on 20.04, so this is a no-op there.)
 RUN set -eux; \
+    if id ubuntu >/dev/null 2>&1; then userdel -r ubuntu; fi; \
     group_name=$(getent group "${GROUP_ID}" | cut -d: -f1 || true); \
     if [ -z "$group_name" ]; then \
         group_name=flashgroup; \
@@ -98,10 +102,13 @@ RUN set -eux; \
 # Switch to the flashuser home directory
 WORKDIR /home/flashuser
 
+# Flash-X branch or tag to build; override with --build-arg FLASHX_REF=<ref> to test one
+ARG FLASHX_REF=main
+
 # Retry mechanism for git clone
 RUN git_clone_with_retries() { \
       for i in {1..5}; do \
-        git clone --depth 1 https://github.com/rtfisher/Flash-X.git flashx && break || sleep 5; \
+        git clone --depth 1 --branch "${FLASHX_REF}" https://github.com/rtfisher/Flash-X.git flashx && break || sleep 5; \
       done; \
     } && git_clone_with_retries
 

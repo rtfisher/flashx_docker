@@ -199,7 +199,7 @@ End-to-end workflow tests:
 
 **What Gets Built:**
 The full integration tests build a complete Flash-X Docker image including:
-- Ubuntu 20.04 base image
+- Ubuntu 24.04 base image
 - Build tools (gcc, gfortran, make, cmake)
 - OpenMPI for parallel computing
 - HDF5 libraries for scientific data storage
